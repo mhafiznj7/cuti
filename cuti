@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DESTINASI THEME PARK FAMILY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+        }
+        /* Memastikan kad slaid mengekalkan ketinggian minimum yang baik untuk semua peranti */
+        .slide-card {
+            min-height: 550px;
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        /* Penyesuaian Butang Tab untuk memastikan ia mudah diakses pada peranti kecil */
+        .tab-button {
+            flex-grow: 1; 
+            min-width: 120px; 
+            text-align: center;
+        }
+        .tab-button.active {
+            background-color: #10b981; /* Emerald 500 */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.4);
+        }
+        .status-open {
+            background-color: #10b981; /* Emerald */
+            color: white;
+        }
+        .status-closed {
+            background-color: #ef4444; /* Red */
+            color: white;
+            animation: pulse-red 1s infinite;
+        }
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        /* Style untuk modal zoom (pastikan ia di atas semua) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .zoomable-image {
+            cursor: zoom-in;
+            transition: transform 0.3s ease;
+        }
+        .zoomable-image:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<!-- Modal Custom Pop-up untuk Butang "Pilih" -->
+<div id="custom-modal" class="modal-overlay hidden" onclick="closeCustomPopup()">
+    <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm mx-auto text-center transform transition-all duration-300 scale-100" onclick="event.stopPropagation()">
+        <h3 class="text-2xl font-bold text-red-600 mb-4">Perhatian!</h3>
+        <p class="text-gray-700 mb-6">BUTTON belum berfungsi sebab belum siap coding hehe. Kalau sudah buat pilihan kasitau dalam group family haha</p>
+        <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg" onclick="closeCustomPopup()">Tutup</button>
+    </div>
+</div>
+
+<!-- Modal Image Zoom -->
+<div id="zoom-modal" class="modal-overlay hidden" onclick="closeZoomModal()">
+    <div class="bg-white p-2 rounded-xl shadow-2xl max-w-5xl w-full h-auto mx-auto overflow-auto" onclick="event.stopPropagation()">
+        <button class="absolute top-4 right-4 text-white text-3xl font-bold p-2 bg-gray-800 rounded-full hover:bg-gray-700 transition" onclick="closeZoomModal()">
+            &times;
+        </button>
+        <img id="modal-image" src="" alt="Peta Zoom" class="w-full h-auto rounded-lg">
+    </div>
+</div>
+
+<div class="max-w-4xl mx-auto">
+    <!-- TAJUK BARU DAN BUTIRAN (CENTER ALIGNMENT) -->
+    <div class="text-center">
+        <h1 class="text-3xl font-extrabold text-gray-800 mb-2">DESTINASI THEME PARK FAMILY 👨‍👩‍👧‍👦</h1>
+        <p class="text-lg text-gray-600 mb-2">Sila semak butiran dan buat pilihan untuk Isnin minggu hadapan.</p>
+        <p class="text-sm italic text-gray-500 mb-6">Jarak diukur dari: **Taman Residensi Setia Impian, Kajang**</p>
+    </div>
+
+    <!-- Navigation Tabs (Simulated Slides) - Menggunakan flex-wrap dan justify-center -->
+    <div class="flex flex-wrap gap-2 mb-6 border-b border-gray-300 pb-2 justify-center">
+        <button class="tab-button active px-4 py-2 text-sm font-semibold rounded-full transition duration-300" data-target="genting">Genting SkyWorlds</button>
+        <button class="tab-button px-4 py-2 text-sm font-semibold rounded-full transition duration-300 text-gray-700 bg-white hover:bg-gray-100" data-target="sunway">Sunway Lagoon</button>
+        <button class="tab-button px-4 py-2 text-sm font-semibold rounded-full transition duration-300 text-gray-700 bg-white hover:bg-gray-100" data-target="gamuda">Gamuda Luge Gardens</button>
+        <button class="tab-button px-4 py-2 text-sm font-semibold rounded-full transition duration-300 text-gray-700 bg-white hover:bg-gray-100" data-target="monkey">Monkey Splash Zone</button>
+        <button class="tab-button px-4 py-2 text-sm font-semibold rounded-full transition duration-300 text-gray-700 bg-white hover:bg-gray-100" data-target="picnic">Jalan-Jalan Santai + Picnic</button>
+        <button class="tab-button px-4 py-2 text-sm font-semibold rounded-full transition duration-300 text-gray-700 bg-white hover:bg-gray-100" data-target="comparison">PERBANDINGAN</button>
+    </div>
+
+    <!-- Slides Content -->
+    <div id="slide-container">
+        <!-- 1. Genting SkyWorlds Theme Park -->
+        <div id="genting" class="slide-card bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">1. Genting SkyWorlds Theme Park 🏔️</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Column 1: Details (Single column on mobile, left on desktop) -->
+                <div>
+                    <div class="mb-4">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium status-open">
+                            Status Isnin: BUKA (10:00 AM - 6:00 PM)
+                        </span>
+                    </div>
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Lokasi:</strong> Genting Highlands, Pahang.</p>
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Jarak dari Kajang:</strong> ~75 km (Anggaran Memandu)</p>
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Jenis Aktiviti:</strong> Themepark Kering (Dry Park) Antarabangsa. Lebih 26 *rides* & tarikan, 9 zon bertema.</p>
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Sesuai Untuk:</strong> Semua peringkat umur (Ada *rides* ekstrem & santai). Sesuai untuk peminat cuaca sejuk.</p>
+                    
+                    <!-- UPDATED PRICE BLOCK -->
+                    <div class="mt-4 p-4 bg-emerald-100 rounded-lg border-2 border-emerald-400">
+                        <p class="text-lg font-bold text-emerald-800 mb-2">Harga PROMOSI Hebat (Sempena 60 Tahun Genting!):</p>
+                        <p class="mb-1 text-gray-500">Harga Asal Dewasa: <s class="text-xl">RM120</s></p>
+                        <p class="mb-1"><strong class="text-3xl text-red-600">RM65</strong> seorang (Dewasa >110cm) - Harga Promosi</p>
+                        <p><strong class="text-3xl text-red-600">RM56</strong> seorang (Kanak-kanak 90-110cm) - Harga Promosi</p>
+                        <p class="text-sm text-gray-600 mt-2">*Harga adalah untuk promosi terhad (MyKad/Online). Sila sahkan di Klook/laman rasmi sebelum membeli.</p>
+                    </div>
+
+                    <!-- TAMBAH LINK YOUTUBE -->
+                    <a href="https://youtu.be/TfX7sEVY2RY" target="_blank" class="mt-4 inline-block text-blue-600 hover:text-blue-800 font-semibold underline transition duration-300">
+                        ▶️ Tonton Video Tarikan Genting SkyWorlds
+                    </a>
+
+                    <button class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300" onclick="handleParkSelection('Genting SkyWorlds', 65, 56, 'genting')">Pilih Genting SkyWorlds</button>
+                </div>
+                
+                <!-- Column 2: Map -->
+                <div>
+                    <h3 class="font-bold text-lg mb-2 mt-4 md:mt-0">Peta Permainan (Klik untuk Zoom):</h3>
+                    <div class="rounded-lg h-64 flex items-center justify-center border-4 border-gray-300 overflow-hidden">
+                        <img src="https://res.klook.com/images/fl_lossy.progressive,q_65/c_fill,w_1295,h_927/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/rwdx0ah2s55u6v9jr4bg/GentingSkyWorldsThemeParkTicket.webp" alt="Peta Genting SkyWorlds" class="rounded-md object-cover w-full h-full zoomable-image" onclick="showZoomModal(this.src)">
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">Visual untuk menunjukkan tata letak 9 Zon Themepark dan laluan utama.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Sunway Lagoon Resort -->
+        <div id="sunway" class="slide-card bg-white p-6 rounded-xl shadow-lg hidden">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">2. Sunway Lagoon Resort 🌴</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <div class="mb-4">
+                        <!-- STATUS DIKEMASKINI: BUKA PADA ISNIN -->
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium status-open">
+                            Status Isnin: BUKA (10:00 AM - 6:00 PM) - Hanya TUTUP setiap Selasa
+                        </span>
+                    </div>
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Lokasi:</strong> Bandar Sunway, Selangor (Akses mudah dari KL).</p>
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Jarak dari Kajang:</strong> ~30 km (Anggaran Memandu)</p>
+                    <!-- KEMASKINI JENIS TAMAN TEMA -->
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Jenis Aktiviti:</strong> Gabungan Themepark Air (Water Park) dan Themepark Kering (6 Zon berbeza).</p>
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Sesuai Untuk:</strong> Keluarga yang suka bermain air dan mencari pengalaman *rides* ekstrem.</p>
+                    <div class="mt-4 p-4 bg-yellow-50 rounded-lg">
+                        <p class="text-lg font-bold text-yellow-800">Harga Pakej (Anggaran MyKad):</p>
+                        <p>Dewasa: Dari <strong class="text-xl">RM185</strong> seorang. Kanak-kanak/Senior: RM150.</p>
+                        <p class="text-sm text-gray-600 mt-1">*Harga termasuk semua 6 Zon kecuali beberapa aktiviti 'pay-per-ride' (Bungy, Go Kart).</p>
+                    </div>
+                    
+                    <!-- TAMBAH LINK YOUTUBE SUNWAY LAGOON -->
+                    <a href="https://www.youtube.com/watch?v=W9impoFgbPs" target="_blank" class="mt-4 inline-block text-blue-600 hover:text-blue-800 font-semibold underline transition duration-300">
+                        ▶️ Tonton Video Tarikan Sunway Lagoon
+                    </a>
+
+                    <!-- BUTANG DIUBAH MENJADI AKTIF -->
+                    <button class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300" onclick="handleParkSelection('Sunway Lagoon Resort', 185, 150, 'sunway')">Pilih Sunway Lagoon</button>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-2 mt-4 md:mt-0">Peta Permainan (Klik untuk Zoom):</h3>
+                    <div class="rounded-lg h-64 flex items-center justify-center border-4 border-gray-300 overflow-hidden">
+                        <!-- Peta Imej Langsung yang telah dibetulkan -->
+                        <img src="https://sunwaylagoon.com/wp-content/uploads/2024/04/Park-Map-scaled.jpg" onerror="this.onerror=null;this.src='https://placehold.co/400x250/FBBF24/1F2937?text=Gagal+Muat+Peta+Sunway+Lagoon'" alt="Peta Sunway Lagoon" class="rounded-md object-cover w-full h-full zoomable-image" onclick="showZoomModal(this.src)">
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">Visual untuk menunjukkan 6 Zon Utama (Water Park, Amusement Park, dll.).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. FunPark Gamuda Luge Gardens (Kombo) -->
+        <div id="gamuda" class="slide-card bg-white p-6 rounded-xl shadow-lg hidden">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">3. Gamuda Luge Gardens (Pelbagai Aktiviti) 🏎️</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <div class="mb-4">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium status-open">
+                            Status Isnin: BUKA (FunPark: 2 PM, Luge: 10 AM)
+                        </span>
+                    </div>
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Lokasi:</strong> Bandar Gamuda Gardens, Rawang, Selangor.</p>
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Jarak dari Kajang:</strong> ~55 km (Anggaran Memandu)</p>
+                    <!-- KEMASKINI JENIS TAMAN TEMA -->
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Jenis Aktiviti:</strong> Themepark Kering (Luge & Rides Karnival) dan Themepark Air Kanak-kanak.</p>
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Sesuai Untuk:</strong> Keluarga dengan pelbagai minat. Boleh pilih aktiviti secara berasingan.</p>
+                    
+                    <!-- NEW PACKAGE SELECTION BLOCK - USING CHECKBOXES -->
+                    <div class="mt-4 p-4 bg-indigo-50 rounded-lg border-2 border-indigo-400">
+                        <p class="text-lg font-bold text-indigo-800 mb-3">Pilih Pakej (Harga per Individu - Sama untuk Dewasa/Kanak-kanak):</p>
+                        <p id="gamuda-current-cost" class="text-lg font-extrabold text-blue-700 mb-3">Anggaran Kos Pakej Dipilih (seorang): RM0</p>
+                        
+                        <!-- Option 1: Skyline Luge -->
+                        <div class="flex items-start space-x-3 mb-3 p-2 bg-white rounded-lg hover:bg-indigo-100 transition duration-150">
+                            <input type="checkbox" id="luge" name="gamuda_package" class="form-checkbox text-indigo-600 mt-1" onchange="calculateGamudaPackageCost()">
+                            <label for="luge" class="flex-grow cursor-pointer">
+                                <span class="font-bold text-xl text-indigo-900">1. Skyline Luge (2 Rides)</span> - <span class="text-xl font-extrabold text-red-600">RM50</span>
+                                <p class="text-sm text-gray-600">Aktiviti: Luge gravity-powered menuruni bukit (2 kali) dan Skyride (kerusi kabel) untuk naik ke atas.</p>
+                            </label>
+                        </div>
+
+                        <!-- Option 2: FunPark -->
+                        <div class="flex items-start space-x-3 mb-3 p-2 bg-white rounded-lg hover:bg-indigo-100 transition duration-150">
+                            <input type="checkbox" id="funpark" name="gamuda_package" class="form-checkbox text-indigo-600 mt-1" onchange="calculateGamudaPackageCost()">
+                            <label for="funpark" class="flex-grow cursor-pointer">
+                                <span class="font-bold text-xl text-indigo-900">2. FunPark (Unlimited Ride)</span> - <span class="text-xl font-extrabold text-red-600">RM24</span>
+                                <p class="text-sm text-gray-600">Aktiviti: Akses tanpa had untuk *rides* karnival seperti Carousel, Jumpshot, Vroomerang, dll.</p>
+                            </label>
+                        </div>
+
+                        <!-- Option 3: Big Bucket Splash -->
+                        <div class="flex items-start space-x-3 p-2 bg-white rounded-lg hover:bg-indigo-100 transition duration-150">
+                            <input type="checkbox" id="splash" name="gamuda_package" class="form-checkbox text-indigo-600 mt-1" onchange="calculateGamudaPackageCost()">
+                            <label for="splash" class="flex-grow cursor-pointer">
+                                <span class="font-bold text-xl text-indigo-900">3. Big Bucket Splash (3 Jam)</span> - <span class="text-xl font-extrabold text-red-600">RM20</span>
+                                <p class="text-sm text-gray-600">Aktiviti: Akses kepada water park ringkas 10,000 sqft dengan slaid, kolam cetek, dan baldi air gergasi.</p>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- TAMBAH LINK YOUTUBE -->
+                    <a href="https://www.youtube.com/watch?v=p9ddttC1G5o" target="_blank" class="mt-4 inline-block text-blue-600 hover:text-blue-800 font-semibold underline transition duration-300">
+                        ▶️ Tonton Video Tarikan Gamuda Luge Gardens
+                    </a>
+
+                    <!-- Button untuk mengesahkan pilihan ke Kalkulator Kos -->
+                    <button class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300" onclick="updateGamudaSelection()">Pilih Pakej Gamuda Luge Gardens Ini</button>
+                </div>
+                
+                <!-- Column 2: Map -->
+                <div>
+                    <h3 class="font-bold text-lg mb-2 mt-4 md:mt-0">Peta Permainan (Klik untuk Zoom):</h3>
+                    <div class="rounded-lg h-64 flex items-center justify-center border-4 border-gray-300 overflow-hidden">
+                        <img src="https://res.klook.com/images/fl_lossy.progressive,q_65/c_fill,w_1295,h_910/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/maqo5ywszmd1dmlsfvcl/FunParkGamudaLugeGardensTicket.webp" alt="Peta Gamuda Luge Gardens" class="rounded-md object-cover w-full h-full zoomable-image" onclick="showZoomModal(this.src)">
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">Peta yang menunjukkan lokasi Luge, FunPark, dan Big Bucket Splash.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Monkey Splash Zone Water Park -->
+        <div id="monkey" class="slide-card bg-white p-6 rounded-xl shadow-lg hidden">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">4. Monkey Splash Zone Water Park 🐒</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <div class="mb-4">
+                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium status-closed">
+                            Status Isnin: **TUTUP** (Buka Selasa - Ahad)
+                        </span>
+                    </div>
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Lokasi:</strong> Monkeys Canopy Resort, Cheras, Selangor.</p>
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Jarak dari Kajang:</strong> ~18 km (Anggaran Memandu - Paling Dekat)</p>
+                    <!-- KEMASKINI JENIS TAMAN TEMA -->
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Jenis Aktiviti:</strong> Themepark Air Tertutup (Indoor Water Park). </p>
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Sesuai Untuk:</strong> Keluarga dengan anak kecil (tinggi 90cm - 130cm). Ruang terhad berbanding themepark air luar.</p>
+                    <div class="mt-4 p-4 bg-red-50 rounded-lg">
+                        <p class="text-lg font-bold text-red-800">Harga Pakej (Anggaran):</p>
+                        <p>Dewasa: <strong class="text-xl">RM65</strong> seorang. Kanak-kanak: **RM45** seorang.</p>
+                        <p class="text-sm text-gray-600 mt-1">*Ada pakej keluarga (2A + 2C) dari RM200.</p>
+                    </div>
+
+                    <!-- TAMBAH LINK YOUTUBE -->
+                    <a href="https://www.youtube.com/watch?v=hsrqnDNEwu4" target="_blank" class="mt-4 inline-block text-blue-600 hover:text-blue-800 font-semibold underline transition duration-300">
+                        ▶️ Tonton Video Tarikan Monkey Splash Zone
+                    </a>
+
+                    <button class="mt-6 w-full bg-gray-400 text-white font-bold py-3 px-6 rounded-lg cursor-not-allowed" disabled>Taman Tema Ditutup (Tidak Boleh Dipilih)</button>
+                </div>
+                
+                <!-- Column 2: Map -->
+                <div>
+                    <h3 class="font-bold text-lg mb-2 mt-4 md:mt-0">Peta Permainan (Klik untuk Zoom):</h3>
+                    <div class="rounded-lg h-64 flex items-center justify-center border-4 border-gray-300 overflow-hidden">
+                        <img src="https://admin.monkeyscanopy.com/storage/products/74Waxct2QJFQ8aVqI6bT7Q0829YVk5nJmgqwHlkn.png" alt="Peta Monkey Splash Zone" class="rounded-md object-cover w-full h-full zoomable-image" onclick="showZoomModal(this.src)">
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">Visual untuk menunjukkan susun atur waterpark dalam dewan.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Picnic (Free) -->
+        <div id="picnic" class="slide-card bg-white p-6 rounded-xl shadow-lg hidden">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">5. JALAN-JALAN SANTAI + PICNIC 🧺</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <div class="mb-4">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium status-open">
+                            Status Isnin: BUKA (Bergantung pada lokasi pilihan)
+                        </span>
+                    </div>
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Jenis Aktiviti:</strong> Riadah, Bersantai, Melawat Bandar dan Pemandangan.</p>
+                    <p class="mb-2 text-gray-700"><strong class="font-semibold">Sesuai Untuk:</strong> Keluarga yang ingin mengeratkan silaturahim dengan bajet sifar untuk aktiviti utama.</p>
+                    
+                    <div class="mt-4 p-4 bg-lime-50 rounded-lg border-2 border-lime-400">
+                        <p class="text-lg font-bold text-lime-800 mb-2">Cadangan Destinasi JALAN-JALAN:</p>
+                        <ul class="list-disc ml-5 text-gray-700">
+                            <li><strong>Putrajaya</strong> (~20 km): Aktiviti bot, taman, dan seni bina moden.</li>
+                            <li><strong>Melaka</strong> (~125 km): Bandar warisan, makanan, dan sejarah.</li>
+                            <li><strong>Port Dickson</strong> (~70 km): Pantai, *resort* bajet, dan *snorkeling* ringkas.</li>
+                            <li><strong>Sungai Besar</strong> (~135 km): Pemandangan sawah padi, makanan laut segar, dan santai.</li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-4 p-4 bg-green-50 rounded-lg">
+                        <p class="text-lg font-bold text-green-800">Harga Pakej (Total Kos Aktiviti):</p>
+                        <p><strong class="text-xl">RM0</strong> (Tiket masuk percuma ke kawasan rekreasi).</p>
+                        <p class="text-sm text-gray-600 mt-1">*Kos bergantung pada lokasi yang dipilih dan makanan yang dibawa (hehe).</p>
+                    </div>
+                    <button class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300" onclick="handleParkSelection('Jalan-Jalan Santai + Picnic', 0, 0, 'picnic')">Pilih Jalan-Jalan Santai</button>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-2 mt-4 md:mt-0">Peta Cadangan Lokasi (Klik untuk Zoom):</h3>
+                    <div class="rounded-lg h-64 flex items-center justify-center border-4 border-gray-300 overflow-hidden">
+                        <img src="https://ms.maps-malaysia-my.com/img/1200/malaysia-peta-kuala-lumpur.jpg" alt="Peta Kuala Lumpur dan Sekitar" class="rounded-md object-cover w-full h-full zoomable-image" onclick="showZoomModal(this.src)">
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">Peta untuk menunjukkan lokasi cadangan Putrajaya (terdekat), PD, Melaka & Sungai Besar.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. PERBANDINGAN - NEW TAB -->
+        <div id="comparison" class="slide-card bg-white p-6 rounded-xl shadow-lg hidden">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">6. PERBANDINGAN PANTAS (Semua Pilihan) 📊</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pilihan</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Isnin</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Aktiviti Utama</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Min (Seorang)</th>
+                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jarak (Dari Kajang)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200 text-sm">
+                        <tr>
+                            <td class="px-3 py-4 font-bold text-gray-900">1. Genting SkyWorlds</td>
+                            <td class="px-3 py-4 text-emerald-600 font-semibold">BUKA</td>
+                            <td class="px-3 py-4">Themepark Kering (Antarabangsa)</td>
+                            <td class="px-3 py-4">RM56 (Kanak-kanak)</td>
+                            <td class="px-3 py-4">~75 km</td>
+                        </tr>
+                        <tr>
+                            <td class="px-3 py-4 font-bold text-gray-900">2. Sunway Lagoon</td>
+                            <td class="px-3 py-4 text-emerald-600 font-semibold">BUKA</td>
+                            <td class="px-3 py-4">Themepark Air & Kering (6 Zon)</td>
+                            <td class="px-3 py-4">RM150 (Kanak-kanak)</td>
+                            <td class="px-3 py-4">~30 km</td>
+                        </tr>
+                        <tr>
+                            <td class="px-3 py-4 font-bold text-gray-900">3. Gamuda Luge Gardens</td>
+                            <td class="px-3 py-4 text-emerald-600 font-semibold">BUKA</td>
+                            <td class="px-3 py-4">Luge, Karnival & Water Splash</td>
+                            <td class="px-3 py-4">RM20 (Big Bucket Splash)</td>
+                            <td class="px-3 py-4">~55 km</td>
+                        </tr>
+                        <tr>
+                            <td class="px-3 py-4 font-bold text-gray-900">4. Monkey Splash Zone</td>
+                            <td class="px-3 py-4 text-red-600 font-semibold">TUTUP</td>
+                            <td class="px-3 py-4">Themepark Air Tertutup (Indoor)</td>
+                            <td class="px-3 py-4">RM45 (Kanak-kanak)</td>
+                            <td class="px-3 py-4">~18 km</td>
+                        </tr>
+                        <tr>
+                            <td class="px-3 py-4 font-bold text-gray-900">5. Jalan-Jalan Santai + Picnic</td>
+                            <td class="px-3 py-4 text-emerald-600 font-semibold">BUKA</td>
+                            <td class="px-3 py-4">Riadah & Lawatan Bandar/Pantai</td>
+                            <td class="px-3 py-4">RM0</td>
+                            <td class="px-3 py-4">~20 hingga 135 km</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="mt-6 text-base text-gray-700 p-4 bg-gray-50 rounded-lg">
+                <span class="font-bold">Kesimpulan Cepat:</span> Jika anda mahukan Themepark **paling dekat**, pilih **Sunway Lagoon** (atau Gamuda). Jika mahukan harga **tiket termurah**, pilih **Genting SkyWorlds** (kerana promosi hebat) atau **Jalan-Jalan Santai**. Monkey Splash Zone **TUTUP** pada hari Isnin.
+            </p>
+            <button class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300" onclick="handleParkSelection('Perbandingan Pilihan', 0, 0, 'comparison')">Pilih Pilihan untuk Perbincangan</button>
+        </div>
+    </div>
+
+    <!-- Pilihan Akhir & Kalkulator Kos -->
+    <div class="mt-8 p-6 bg-blue-50 border-4 border-blue-200 rounded-xl shadow-inner">
+        <h2 class="text-2xl font-bold text-blue-800 mb-4">Pilihan Keluarga & Anggaran Kos Total</h2>
+        <p class="mb-4 text-blue-700">Pilihan terkini keluarga adalah: <strong id="selected-park" class="text-red-600 font-extrabold">BELUM DIPILIH</strong>.</p>
+
+        <div class="p-4 bg-white rounded-lg shadow">
+            <h3 class="font-semibold text-gray-800 mb-3">Anggaran Total Kos (Tiket Sahaja):</h3>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="adults" class="block text-sm font-medium text-gray-700">Bilangan Dewasa (Anggaran Kos: RM<span id="adult-price">0</span>)</label>
+                    <input type="number" id="adults" min="0" value="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                </div>
+                <div>
+                    <label for="children" class="block text-sm font-medium text-gray-700">Bilangan Kanak-kanak (Anggaran Kos: RM<span id="child-price">0</span>)</label>
+                    <input type="number" id="children" min="0" value="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
+                </div>
+            </div>
+            <div class="text-right p-3 bg-blue-100 rounded-lg">
+                <p class="text-xl font-bold text-blue-900">Total Kos Tiket: <span class="text-2xl" id="total-cost">RM 0</span></p>
+                <p class="text-xs text-gray-600 mt-1">*Anggaran ini berdasarkan harga tiket dewasa dan kanak-kanak tertinggi yang dicadangkan.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Data Taman Tema (dengan harga purata/min untuk kalkulator)
+    const parks = {
+        genting: { name: "Genting SkyWorlds Theme Park", adultPrice: 65, childPrice: 56, distance: 75 }, 
+        sunway: { name: "Sunway Lagoon Resort", adultPrice: 185, childPrice: 150, distance: 30 },
+        gamuda: { name: "Gamuda Luge Gardens (Pilih Pakej)", adultPrice: 0, childPrice: 0, distance: 55 }, 
+        monkey: { name: "Monkey Splash Zone (TUTUP Isnin)", adultPrice: 65, childPrice: 45, distance: 18 },
+        picnic: { name: "Jalan-Jalan Santai + Picnic", adultPrice: 0, childPrice: 0, distance: 27 },
+        comparison: { name: "Perbandingan Pilihan", adultPrice: 0, childPrice: 0, distance: 0 } 
+    };
+
+    // Harga Individu untuk Gamuda
+    const gamudaIndividualPrices = {
+        luge: 50,
+        funpark: 24,
+        splash: 20
+    };
+
+    let selectedParkKey = 'genting'; // Default selection
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Event listeners untuk butang tab
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.getAttribute('data-target');
+                showSlide(targetId);
+            });
+        });
+
+        // Event listeners untuk input kos
+        document.getElementById('adults').addEventListener('input', calculateTotalCost);
+        document.getElementById('children').addEventListener('input', calculateTotalCost);
+
+        // Set default view dan kalkulator
+        showSlide('genting');
+    });
+
+    // --- FUNGSI MODAL CUSTOM POP-UP (BUTTON PILIH) ---
+    function showCustomPopup() {
+        document.getElementById('custom-modal').classList.remove('hidden');
+    }
+    
+    function closeCustomPopup() {
+        document.getElementById('custom-modal').classList.add('hidden');
+    }
+
+    // --- FUNGSI MODAL ZOOM GAMBAR ---
+    function showZoomModal(src) {
+        document.getElementById('modal-image').src = src;
+        document.getElementById('zoom-modal').classList.remove('hidden');
+    }
+
+    function closeZoomModal() {
+        document.getElementById('zoom-modal').classList.add('hidden');
+    }
+
+    // --- FUNGSI PENGENDALI UTAMA BUTANG PILIH ---
+    function handleParkSelection(parkName, adultPrice, childPrice, parkKey) {
+        // 1. Simpan pilihan ke kalkulator
+        selectPark(parkName, adultPrice, childPrice, parkKey);
+        
+        // 2. Tunjukkan pop-up
+        showCustomPopup();
+    }
+
+
+    // Fungsi untuk mengira kos pakej Gamuda
+    function calculateGamudaPackageCost() {
+        let costPerPerson = 0;
+        const selectedPackages = [];
+
+        // Pastikan checkbox Gamuda berada dalam slaid yang sedang aktif
+        if (document.getElementById('gamuda').classList.contains('hidden') && selectedParkKey !== 'gamuda') {
+            return;
+        }
+
+        if (document.getElementById('luge').checked) {
+            costPerPerson += gamudaIndividualPrices.luge;
+            selectedPackages.push('Luge (RM50)');
+        }
+        if (document.getElementById('funpark').checked) {
+            costPerPerson += gamudaIndividualPrices.funpark;
+            selectedPackages.push('FunPark (RM24)');
+        }
+        if (document.getElementById('splash').checked) {
+            costPerPerson += gamudaIndividualPrices.splash;
+            selectedPackages.push('Splash (RM20)');
+        }
+
+        // Kemaskini paparan kos semasa dalam slaid Gamuda
+        document.getElementById('gamuda-current-cost').textContent = `Anggaran Kos Pakej Dipilih (seorang): RM${costPerPerson.toFixed(0)}`;
+        
+        // Simpan harga dalam objek parks (Adult/Child sama untuk Gamuda)
+        parks.gamuda.adultPrice = costPerPerson;
+        parks.gamuda.childPrice = costPerPerson;
+        
+        // Simpan nama pilihan untuk display di kalkulator
+        const nameExtension = selectedPackages.length > 0 ? ` (${selectedPackages.join(' + ')})` : ' (Sila Pilih Pakej)';
+        parks.gamuda.name = `Gamuda Luge Gardens${nameExtension}`;
+
+        // Jika Gamuda sedang dipilih di kalkulator, update kos total segera
+        if (selectedParkKey === 'gamuda') {
+            selectPark(parks.gamuda.name, parks.gamuda.adultPrice, parks.gamuda.childPrice, 'gamuda');
+        }
+    }
+
+    // Fungsi untuk menukar slaid (tab)
+    function showSlide(targetId) {
+        // Sembunyikan semua slaid
+        document.querySelectorAll('.slide-card').forEach(slide => {
+            slide.classList.add('hidden');
+        });
+
+        // Tunjukkan slaid yang dipilih
+        document.getElementById(targetId).classList.remove('hidden');
+
+        // Kemaskini butang aktif
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('active', 'bg-emerald-500', 'text-white', 'hover:bg-gray-100', 'text-gray-700', 'bg-white');
+            button.classList.add('text-gray-700', 'bg-white', 'hover:bg-gray-100');
+            if (button.getAttribute('data-target') === targetId) {
+                button.classList.add('active', 'bg-emerald-500', 'text-white');
+                button.classList.remove('text-gray-700', 'bg-white', 'hover:bg-gray-100');
+            }
+        });
+        
+        // Tentukan harga yang perlu dihantar ke kalkulator berdasarkan tab yang dipilih
+        const parkData = parks[targetId];
+        let adultPrice = parkData.adultPrice;
+        let childPrice = parkData.childPrice;
+
+        if (targetId === 'gamuda') {
+            calculateGamudaPackageCost(); // Kira kos Gamuda
+            adultPrice = parks.gamuda.adultPrice;
+            childPrice = parks.gamuda.childPrice;
+        }
+
+        // Kemaskini kalkulator utama
+        selectPark(parkData.name, adultPrice, childPrice, targetId);
+    }
+
+    // Fungsi untuk mengemaskini pilihan dan harga dalam kalkulator
+    function selectPark(parkName, adultPrice, childPrice, parkKey) {
+        document.getElementById('selected-park').textContent = parkName;
+        selectedParkKey = parkKey;
+        
+        // Simpan harga baru ke dalam objek parks jika datang dari butang 'Pilih'
+        if(parkKey !== 'gamuda') {
+            parks[parkKey].adultPrice = adultPrice;
+            parks[parkKey].childPrice = childPrice;
+        }
+
+        // Update harga per kepala
+        document.getElementById('adult-price').textContent = adultPrice.toFixed(0);
+        document.getElementById('child-price').textContent = childPrice.toFixed(0);
+        
+        // Kira kos
+        calculateTotalCost();
+    }
+    
+    // Fungsi untuk mengesahkan dan memilih Gamuda Luge ke kalkulator utama
+    function updateGamudaSelection() {
+        // Panggil kiraan terakhir untuk pastikan parks.gamuda dikemaskini
+        calculateGamudaPackageCost();
+        // Setkan pilihan Gamuda ke kalkulator utama
+        handleParkSelection(parks.gamuda.name, parks.gamuda.adultPrice, parks.gamuda.childPrice, 'gamuda');
+    }
+
+
+    // Fungsi untuk mengira total kos
+    function calculateTotalCost() {
+        const parkData = parks[selectedParkKey];
+        if (!parkData) return;
+
+        // Dapatkan harga semasa dari display di kalkulator (untuk ambil harga Gamuda yang dikira)
+        const currentAdultPrice = parseInt(document.getElementById('adult-price').textContent) || 0;
+        const currentChildPrice = parseInt(document.getElementById('child-price').textContent) || 0;
+
+        // Dapatkan input bilangan dewasa dan kanak-kanak
+        const adults = parseInt(document.getElementById('adults').value) || 0;
+        const children = parseInt(document.getElementById('children').value) || 0;
+        
+        // Kirakan total kos menggunakan harga semasa
+        const total = (adults * currentAdultPrice) + (children * currentChildPrice);
+        
+        // Paparkan total kos
+        document.getElementById('total-cost').textContent = `RM ${total.toFixed(2)}`;
+    }
+</script>
+
+</body>
+</html>
